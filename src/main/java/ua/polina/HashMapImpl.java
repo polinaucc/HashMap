@@ -1,32 +1,30 @@
 package ua.polina;
 
 public class HashMapImpl implements HashMap {
+    private static final float DEFAULT_LOAD_FACTOR = 0.75f;
+
     private Item[] items;
     private int size;
-    private float loadFactor = 0.75f;
+    private float loadFactor;
     private int limitQuantity;
 
     public HashMapImpl() {
         items = new Item[16];
+        this.loadFactor = DEFAULT_LOAD_FACTOR;
         changeLimitQuantity();
     }
 
     public HashMapImpl(int capacity) {
-        checkIfPositive(capacity);
-        items = new Item[capacity];
-        changeLimitQuantity();
+        this(capacity, DEFAULT_LOAD_FACTOR);
     }
 
     public HashMapImpl(int capacity, float loadFactor) {
-        checkIfPositive(capacity);
-        if (loadFactor > 1 || loadFactor < 0) throw new IllegalArgumentException("LoadFactor should be between  and 1");
+        if (capacity < 0) throw new IllegalArgumentException("Capacity must be a positive number");
+        if (loadFactor < 0 || loadFactor > 1)
+            throw new IllegalArgumentException(" Load factor should be between 0 and 1");
         items = new Item[capacity];
-        this.loadFactor = loadFactor;
         changeLimitQuantity();
-    }
-
-    public void checkIfPositive(int value) {
-        if (value < 0) throw new IllegalArgumentException("Capacity must be a positive number");
+        this.loadFactor = loadFactor;
     }
 
     @Override
@@ -34,7 +32,7 @@ public class HashMapImpl implements HashMap {
         int step = 0;
         int index = getIndex(key, step);
         while (true) {
-            if (items[index] == null) return null;
+            if (items[index] == null) throw new NoSuchElementException("No such element");
             else if (items[index].getKey() == key) {
                 return items[index].getValue();
             } else {
@@ -99,5 +97,4 @@ public class HashMapImpl implements HashMap {
         size = 0;
         limitQuantity = Math.round(items.length * loadFactor);
     }
-
 }
