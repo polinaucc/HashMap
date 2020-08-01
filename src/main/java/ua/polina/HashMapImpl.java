@@ -6,17 +6,30 @@ public class HashMapImpl implements HashMap {
     private float loadFactor = 0.75f;
     private int limitQuantity;
 
+    public HashMapImpl() {
+        items = new Item[16];
+        changeLimitQuantity();
+    }
+
     public HashMapImpl(int capacity) {
+        checkIfPositive(capacity);
         items = new Item[capacity];
         changeLimitQuantity();
     }
 
     public HashMapImpl(int capacity, float loadFactor) {
+        checkIfPositive(capacity);
+        if (loadFactor > 1 || loadFactor < 0) throw new IllegalArgumentException("LoadFactor should be between  and 1");
         items = new Item[capacity];
         this.loadFactor = loadFactor;
         changeLimitQuantity();
     }
 
+    public void checkIfPositive(int value) {
+        if (value < 0) throw new IllegalArgumentException("Capacity must be a positive number");
+    }
+
+    @Override
     public Long get(int key) {
         int step = 0;
         int index = getIndex(key, step);
@@ -32,6 +45,7 @@ public class HashMapImpl implements HashMap {
         }
     }
 
+    @Override
     public Long put(int key, long value) {
         int step = 0;
         int index = getIndex(key, step);
@@ -53,14 +67,15 @@ public class HashMapImpl implements HashMap {
         }
     }
 
+    @Override
+    public int size() {
+        return size;
+    }
+
     private int getIndex(int key, int step) {
         int tableSize = items.length;
         int hash = (key % tableSize) + step;
         return Math.abs(hash % tableSize);
-    }
-
-    public int size() {
-        return size;
     }
 
     private void isFilled() {
