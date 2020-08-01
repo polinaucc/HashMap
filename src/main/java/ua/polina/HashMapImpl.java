@@ -1,24 +1,20 @@
 package ua.polina;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class HashMapImpl implements HashMap {
     private Item[] items;
-    private int size = 0;
+    private int size;
     private float loadFactor = 0.75f;
     private int limitQuantity;
 
     public HashMapImpl(int capacity) {
         items = new Item[capacity];
-        this.limitQuantity = Math.round(this.loadFactor * capacity);
+        changeLimitQuantity();
     }
 
     public HashMapImpl(int capacity, float loadFactor) {
         items = new Item[capacity];
         this.loadFactor = loadFactor;
-        this.limitQuantity = Math.round(this.loadFactor * capacity);
+        changeLimitQuantity();
     }
 
     public Long get(int key) {
@@ -70,26 +66,23 @@ public class HashMapImpl implements HashMap {
     private void isFilled() {
         if (size > limitQuantity) {
             Item[] old = items;
-            items = new Item[items.length*2];
-            size = 0;
-            limitQuantity = Math.round(items.length * loadFactor);
-            for (Item element : old) {
+            items = new Item[items.length * 2];
+            changeLimitQuantity();
+            rewriteHashMap(old);
+        }
+    }
 
-                if (element != null) {
-                    put(element.getKey(), element.getValue());
-                }
+    private void rewriteHashMap(Item[] old) {
+        for (Item element : old) {
+            if (element != null) {
+                put(element.getKey(), element.getValue());
             }
         }
     }
 
-    public String toString() {
-        StringBuilder str = new StringBuilder();
-        for (Item element : items) {
-            if (element != null) {
-                str.append("\n" + "Key: ").append(element.getKey()).append(" Value: ").append(element.getValue());
-            } else
-                str.append("\n" + "Key: ").append("null").append(" Value: ").append("null");
-        }
-        return str.toString();
+    private void changeLimitQuantity() {
+        size = 0;
+        limitQuantity = Math.round(items.length * loadFactor);
     }
+
 }
